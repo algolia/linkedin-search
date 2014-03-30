@@ -2,11 +2,27 @@
 %html
   %head
     %meta{:name => "viewport", :content => "width=device-width, initial-scale=1.0"}
-    %title= content_for?(:title) ? yield(:title) : 'LinkedIn Search'
-    %meta{:name => "description", :content => "#{content_for?(:description) ? yield(:description) : 'Linkedin Search'}"}
+    %title= content_for?(:title) ? yield(:title) : 'LinkedIn Search powered by Algolia'
+    %meta{:name => "description", :content => "LinkedIn 1st degree connections search powered by Algolia."}
     %link{:rel => "shortcut icon", :href=> '/favicon.ico'}
     = stylesheet_link_tag 'application', media: 'all'
     = javascript_include_tag 'application'
     = csrf_meta_tags
+
+    %meta{name: "twitter:card", content: "summary"}
+    %meta{name: "twitter:site", content: "@algolia"}
+    %meta{name: "twitter:title", content: "LinkedIn Search"}
+    %meta{name: "twitter:description", content: "LinkedIn 1st degree connections search powered by Algolia."}
+    %meta{name: "twitter:image:src", content: asset_url('capture.png')}
+    %meta{name: "twitter:domain", content: request.host}
+
+    %meta{property: "st:title", content: "LinkedIn Search" }
+    %meta{property: "og:url", content: request.url }
+    %meta{property: "og:site_name", content: 'LinkedIn Search' }
+    %meta{property: "og:title", content: 'LinkedIn Search' }
+    %meta{property: "og:description", content: "LinkedIn 1st degree connections search powered by Algolia." }
+    %meta{property: "og:image", content: asset_url('capture.png') }
+    %meta{property: "og:image:width", content: '612' }
+    %meta{property: "og:image:height", content: '382' }
   %body
     = yield
