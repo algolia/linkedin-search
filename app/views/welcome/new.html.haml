@@ -18,6 +18,8 @@
       %p.text-center
         %i.glyphicon.glyphicon-refresh.icon-rotation
         We're indexing your connections, please wait...
+        %br
+        %small.text-muted Could take up to 1 minute depending on LinkedIn's API
 
   %script#hit-template{type: 'text/template'}
     :plain
@@ -176,4 +178,4 @@
         = image_tag "http://www.algolia.com/assets/algolia_white.png"
     = link_to "Try with your LinkedIn account", '/auth/linkedin', class: 'login'
     %p.text-center
-      %em All your data will be <u>securely</u> indexed, only searchable by You.
+      %em Your data will be <u>securely</u> indexed, only searchable by You.
