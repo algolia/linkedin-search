@@ -42,7 +42,7 @@ class User < ActiveRecord::Base
           title: p.title
         }
       },
-      _tags: [ uid ]
+      _tags: [ uid ] # used for security
     }
   end
 
