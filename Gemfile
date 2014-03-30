@@ -23,6 +23,7 @@ gem 'bourbon'
 gem 'random_data'
 gem 'faker'
 gem 'bluepill'
+gem 'therubyracer'
 
 group :development do
   gem 'better_errors'
