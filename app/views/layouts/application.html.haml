@@ -2,14 +2,11 @@
 %html
   %head
     %meta{:name => "viewport", :content => "width=device-width, initial-scale=1.0"}
-    %title= content_for?(:title) ? yield(:title) : 'Linkedin Search'
+    %title= content_for?(:title) ? yield(:title) : 'LinkedIn Search'
     %meta{:name => "description", :content => "#{content_for?(:description) ? yield(:description) : 'Linkedin Search'}"}
-    = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true
-    = javascript_include_tag 'application', 'data-turbolinks-track' => true
+    %link{:rel => "shortcut icon", :href=> '/favicon.ico'}
+    = stylesheet_link_tag 'application', media: 'all'
+    = javascript_include_tag 'application'
     = csrf_meta_tags
   %body
-    %header
-      = render 'layouts/navigation'
-    %main{:role => "main"}
-      = render 'layouts/messages'
-      = yield
+    = yield

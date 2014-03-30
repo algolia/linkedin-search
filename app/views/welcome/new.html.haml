@@ -1,0 +1,179 @@
+- if current_user || @tag
+  - if current_user
+    #signout-link.hidden-xs= link_to "Sign out", signout_path, method: :delete
+  #search-form.form
+    %input.form-control#q{type: 'text', autocomplete: 'off', autocorrect: 'off', spellcheck: 'false', placeholder: 'Search people by name, company, location or keywords'}
+    %small
+      Realtime Search by
+      = link_to 'http://www.algolia.com' do
+        = image_tag "http://www.algolia.com/assets/algolia_white.png"
+  .container-wrapper
+    #hits-wrapper.container{style: 'display: none'}
+      .row
+        #facets.col-lg-3.col-sm-4.hidden-xs
+        #hits.col-lg-9.col-sm-8.col-xs-12
+    #no-results{style: 'display: none'}
+      %p.text-center No results are matching your query.
+    #loading{style: 'display: none'}
+      %p.text-center
+        %i.glyphicon.glyphicon-refresh.icon-rotation
+        We're indexing your connections, please wait...
+
+  %script#hit-template{type: 'text/template'}
+    :plain
+      <div class="hit">
+        <div class="thumb">
+          {{#picture_url}}
+          <img src="{{ picture_url }}" />
+          {{/picture_url}}
+          {{^picture_url}}
+          <img src="https://static.licdn.com/scds/common/u/images/themes/katy/ghosts/person/ghost_person_80x80_v1.png" />
+          {{/picture_url}}
+        </div>
+        <div class="infos">
+          <div class="full-name"><a href="{{ url }}">{{{ _highlightResult.first_name.value }}} {{{ _highlightResult.last_name.value }}}</a> ({{ num_connections }} connection{{#num_connections_plural}}s{{/num_connections_plural}})</div>
+          <div class="headline">{{{ _highlightResult.headline.value }}}</div>
+          <div class="industry">{{{ _highlightResult.industry.value }}}</div>
+          <div class="location">{{{ _highlightResult.location.value }}}</div>
+          <div class="positions">
+          {{#_highlightResult.positions}}
+            <dl class="position dl-horizontal">
+              <dt>Company</dt><dd>{{{ company.name.value }}} ({{{ company.industry.value }}})</dd>
+              {{#start_date.year}}
+              <dt>Since</dt>
+              <dd>
+                {{{ start_date.year }}}{{#start_date.month}}/{{ start_date.month }}{{/start_date.month}}</dd>
+              {{/start_date.year}}
+            </dl>
+          {{/_highlightResult.positions}}
+          </div>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+
+  :javascript
+    $(document).ready(function() {
+      var algolia = new AlgoliaSearch('#{ENV['ALGOLIA_APPLICATION_ID']}', '#{@secured_api_key}');
+      algolia.setSecurityTags('#{@tag || current_user.uid}');
+      var $hits = $('#hits');
+      var $hitsWrapper = $('#hits-wrapper');
+      var $noResults = $('#no-results');
+      var $facets = $('#facets');
+      var $loading = $('#loading');
+      var $q = $('#q');
+      var LABELS = {
+        'industry' : 'Industry',
+        'location' : 'Location',
+        'positions.company.name' : 'Company'
+      };
+      var hitTemplate = Hogan.compile($('#hit-template').text());
+
+      window.helper = new AlgoliaSearchHelper(algolia, 'linkedin_#{Rails.env}', {
+        hitsPerPage: 10,
+        facets: [],
+        disjunctiveFacets: ['positions.company.name', 'industry', 'location']
+      });
+
+      var loading = true;
+      function searchCallback(success, content) {
+        if (!success || $q.val() != content.query) {
+          return;
+        }
+
+        if (loading) {
+          $loading.show();
+          algolia.clearCache();
+          if (content.hits.length < 2) {
+            $hitsWrapper.hide();
+            $noResults.hide();
+            $loading.show();
+            setTimeout(search, 1000);
+            return;
+          }
+          loading = false;
+        }
+        $loading.hide();
+
+        if (content.hits.length === 0) {
+          $facets.empty();
+          $hits.empty();
+          $hitsWrapper.hide();
+          $noResults.show();
+          return;
+        }
+        $hitsWrapper.show();
+        $noResults.hide();
+
+        var html = '';
+        for (var i = 0; i < content.hits.length; ++i) {
+          var hit = content.hits[i];
+
+          // interesting/matching positions only
+          if (hit._highlightResult.positions) {
+            var explain = AlgoliaExplainResults(hit, 'industry', ['positions.company.name']);
+            var positions = hit._highlightResult.positions;
+            hit._highlightResult.positions = [];
+            for (var j = 0; j < explain.subtitles.length; ++j) {
+              var s = explain.subtitles[j];
+              if (s.attr === 'positions.company.name') {
+                for (var k = 0; k < positions.length; ++k) {
+                  if (positions[k].company.name.value === s.value) {
+                    hit._highlightResult.positions.push(positions[k]);
+                  }
+                }
+              }
+            }
+          }
+
+          // num connections tweaks
+          if (!hit.num_connections) {
+            hit.num_connections = 0;
+          } else if (hit.num_connections === 500) {
+            hit.num_connections = '500+';
+          }
+          hit.num_connections_plural = hit.num_connections !== 1;
+
+          // rendering
+          html += hitTemplate.render(hit);
+        }
+        $hits.html(html);
+
+        html = '';
+        for (var facet in content.disjunctiveFacets) {
+          var values = [];
+          for (var f in content.disjunctiveFacets[facet]) {
+            values.push([f, content.disjunctiveFacets[facet][f]]);
+          }
+          values.sort(function(a, b) { b[1] - a[1] });
+          html += '<div class="title">' + LABELS[facet] + '</div>' +
+            '<ul class="list-unstyled">' +
+              $.map(values, function(e) { return '<li class="' + (helper.isRefined(facet, e[0]) ? 'active' : '') + '"><input type="checkbox" onclick="helper.toggleRefine(\'' + facet + '\', \'' + e[0] + '\');" ' + (helper.isRefined(facet, e[0]) ? 'checked="checked"' : '') + ' /><a href="#" onclick="helper.toggleRefine(\'' + facet + '\', \'' + e[0] + '\'); return false;">' + e[0] + '</a> (' + e[1] + ')'; }).join('') +
+            '</ul>';
+        }
+        $facets.html(html);
+      }
+
+      window.search = function() {
+        helper.search($q.val(), searchCallback, {
+          page: 0,
+          maxValuesPerFacet: 10,
+          hitsPerPage: 10,
+          advancedSyntax: true,
+          queryType: 'prefixAll'
+        });
+      };
+      
+      $q.on('keyup change', function() {
+        window.search();
+      }).focus();
+
+      window.search();
+    });
+- else
+  #signin-link
+    %p.text-center
+      = link_to "http://www.algolia.com" do
+        = image_tag "http://www.algolia.com/assets/algolia_white.png"
+    = link_to "Try with your LinkedIn account", '/auth/linkedin', class: 'login'
+    %p.text-center
+      %em All your data will be <u>securely</u> indexed, only searchable by You.
