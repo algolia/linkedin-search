@@ -24,6 +24,7 @@ gem 'random_data'
 gem 'faker'
 gem 'bluepill'
 gem 'therubyracer'
+gem 'hipchat'
 
 group :development do
   gem 'better_errors'
