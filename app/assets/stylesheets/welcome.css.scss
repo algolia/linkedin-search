@@ -1,3 +1,4 @@
+@import "bootstrap/variables";
 @import "bourbon";
 
 html, body {
@@ -176,6 +177,10 @@ body {
       float: left;
       width: 80px;
       text-align: center;
+
+      img {
+        max-width: 100%;
+      }
     }
 
     .infos {
@@ -193,3 +198,20 @@ body {
   }
 }
 
+@media(max-width: $screen-xs-max) {
+  #hits .hit {
+    padding: 3px 0px;
+
+    .thumb {
+      width: 40px;
+    }
+
+    .infos {
+      width: 270px;
+
+      .connections {
+        font-size: 0.8em;
+      }
+    }
+  }
+}

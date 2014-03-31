@@ -11,10 +11,11 @@
     #social-links.container
       %a.twitter-follow-button{href: "https://twitter.com/algolia", "data-show-count" => "false", "data-show-screen-name" => "true"}Follow @algolia
       %a.twitter-share-button{href: "https://twitter.com/share", "data-url" => root_url, "data-via" => "algolia", 'data-text' => 'Rethink the way you search your contacts on LinkedIn'} Tweet
-    #hits-wrapper.container{style: 'display: none'}
-      .row
-        #facets.col-lg-3.col-sm-4.hidden-xs
-        #hits.col-lg-9.col-sm-8.col-xs-12
+    #hits-wrapper{style: 'display: none'}
+      .container
+        .row
+          #facets.col-lg-3.col-sm-4.hidden-xs
+          #hits.col-lg-9.col-sm-8.col-xs-12
     #no-results{style: 'display: none'}
       %p.text-center No results are matching your query.
     #loading{style: 'display: none'}
@@ -36,7 +37,7 @@
           {{/picture_url}}
         </div>
         <div class="infos">
-          <div class="full-name"><a href="{{ url }}">{{{ _highlightResult.first_name.value }}} {{{ _highlightResult.last_name.value }}}</a> ({{ num_connections }} connection{{#num_connections_plural}}s{{/num_connections_plural}})</div>
+          <div class="full-name"><a href="{{ url }}">{{{ _highlightResult.first_name.value }}} {{{ _highlightResult.last_name.value }}}</a> <span class="connections">({{ num_connections }} connection{{#num_connections_plural}}s{{/num_connections_plural}})</span></div>
           <div class="headline">{{{ _highlightResult.headline.value }}}</div>
           <div class="industry">{{{ _highlightResult.industry.value }}}</div>
           <div class="location">{{{ _highlightResult.location.value }}}</div>
