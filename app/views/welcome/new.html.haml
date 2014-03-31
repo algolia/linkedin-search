@@ -1,6 +1,9 @@
 - if current_user || @tag
-  - if current_user
-    #signout-link.hidden-xs= link_to "Sign out", signout_path, method: :delete
+  #signout-link.hidden-xs
+    - if @tag
+      = link_to "Try it now!", root_path
+    - else
+      = link_to "Sign out", signout_path, method: :delete
   #search-form.form
     %input.form-control#q{type: 'text', autocomplete: 'off', autocorrect: 'off', spellcheck: 'false', placeholder: 'Search people by name, company, location or keywords'}
     %small
