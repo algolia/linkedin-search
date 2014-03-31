@@ -13,8 +13,14 @@ body {
   background-image: linear-gradient(top, #696969 0%,#3f3f3f 100%);
 }
 
+#stats {
+  float: left;
+  margin-top: 15px;
+  font-size: 0.8em;
+}
+
 #social-links {
-  text-align: right;
+  float: right;
   margin-top: 10px;
 }
 
