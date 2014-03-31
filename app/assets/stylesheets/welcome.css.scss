@@ -199,6 +199,12 @@ body {
 }
 
 @media(max-width: $screen-xs-max) {
+  #no-results, #loading {
+    margin-top: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
   #hits .hit {
     padding: 3px 0px;
 
@@ -207,10 +213,13 @@ body {
     }
 
     .infos {
-      width: 270px;
+      width: 220px;
 
       .connections {
         font-size: 0.8em;
+        span {
+          display: none;
+        }
       }
     }
   }

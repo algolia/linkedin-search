@@ -37,7 +37,7 @@
           {{/picture_url}}
         </div>
         <div class="infos">
-          <div class="full-name"><a href="{{ url }}">{{{ _highlightResult.first_name.value }}} {{{ _highlightResult.last_name.value }}}</a> <span class="connections">({{ num_connections }} connection{{#num_connections_plural}}s{{/num_connections_plural}})</span></div>
+          <div class="full-name"><a href="{{ url }}">{{{ _highlightResult.first_name.value }}} {{{ _highlightResult.last_name.value }}}</a> <span class="connections">({{ num_connections }}<span> connection{{#num_connections_plural}}s{{/num_connections_plural}}</span>)</span></div>
           <div class="headline">{{{ _highlightResult.headline.value }}}</div>
           <div class="industry">{{{ _highlightResult.industry.value }}}</div>
           <div class="location">{{{ _highlightResult.location.value }}}</div>
