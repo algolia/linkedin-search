@@ -1,6 +1,6 @@
 Bluepill.application("linkedin-search", :log_file => "/var/www/linkedin-search/current/log/bluepill.log") do |app|
   (1..4).each do |i|
-    app.process("delayed_job.#{i}") do |process|
+    app.process("linkedin-delayed_job.#{i}") do |process|
       process.working_dir = "/var/www/linkedin-search/current"
       process.environment = { 'RAILS_ENV' => 'production' }
 
