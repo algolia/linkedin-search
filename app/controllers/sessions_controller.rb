@@ -28,4 +28,8 @@ class SessionsController < ApplicationController
     redirect_to root_url, :alert => "Authentication error: #{params[:message].humanize}"
   end
 
+  def infos
+    render json: { nonSearchableUsers: current_user.try(:non_searchable_counter) }
+  end
+
 end

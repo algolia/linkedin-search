@@ -79,6 +79,7 @@
         'positions.company.name' : 'Company'
       };
       var hitTemplate = Hogan.compile($('#hit-template').text());
+      var nonSearchableUsers = #{current_user.try(:non_searchable_counter) || 0};
 
       window.helper = new AlgoliaSearchHelper(algolia, 'linkedin_#{Rails.env}', {
         hitsPerPage: 10,
@@ -104,6 +105,12 @@
             return;
           }
           loading = false;
+          $.getJSON("/infos.json", function(data) {
+            if (nonSearchableUsers === 0 && data.nonSearchableUsers > 0) {
+              alert("We've detected that " + data.nonSearchableUsers + " of your connections are private, so they'll not be searchable.");
+            }
+            nonSearchableUsers = data.nonSearchableUsers;
+          });
         }
         $loading.hide();
 
@@ -119,7 +126,11 @@
         $stats.show();
         $noResults.hide();
 
-        $stats.html('<b>' + content.nbHits + '</b> result' + (content.nbHits > 1 ? 's' : '') + ' in <b>' + content.processingTimeMS + '</b> ms');
+        var stats = '<b>' + content.nbHits + '</b> result' + (content.nbHits > 1 ? 's' : '') + ' in <b>' + content.processingTimeMS + '</b> ms';
+        if (nonSearchableUsers > 0) {
+          stats += ' (excl. ' + nonSearchableUsers + ' private connections)';
+        }
+        $stats.html(stats);
 
         var html = '';
         for (var i = 0; i < content.hits.length; ++i) {

@@ -27,11 +27,14 @@ class User < ActiveRecord::Base
       connections += slice.map { |c| build_algolia_object(c) }
       start += LIMIT
     end
-    INDEX.add_objects(connections)
+    searchable_connections = connections.compact
+    update_attribute :non_searchable_counter, (connections.length - searchable_connections.length)
+    INDEX.add_objects(searchable_connections)
   end
 
   private
   def build_algolia_object(c)
+    return nil if c.id.blank? || c.id == 'private'
     {
       objectID: "#{uid}_#{c.id}",
       first_name: c.first_name,
