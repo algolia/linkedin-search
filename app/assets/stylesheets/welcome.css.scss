@@ -34,6 +34,7 @@ body {
   a.login, a.login:hover {
     display: block;
     margin: 0px auto;
+    margin-bottom: 30px;
     width: 250px;
     text-align: center;
     background: #1A85BD;
@@ -44,9 +45,10 @@ body {
     text-decoration: none;
   }
 
-  p {
+  p, h1 {
     color: #888;
     margin-top: 10px;
+    margin-bottom: 30px;
   }
 }
 
@@ -205,6 +207,10 @@ body {
 }
 
 @media(max-width: $screen-xs-max) {
+  #signin-link {
+    top: 10px;
+  }
+
   #no-results, #loading {
     margin-top: 20px;
     margin-left: 10px;

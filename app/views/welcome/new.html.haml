@@ -201,9 +201,13 @@
     });
 - else
   #signin-link
-    %p.text-center
+    %h1.text-center
+      LinkedIn Search by
       = link_to "http://www.algolia.com" do
         = image_tag "http://www.algolia.com/assets/algolia_white.png"
+      %br
+      %em
+        %small Rethink the way you search your contacts on LinkedIn.
     = link_to "Try with your LinkedIn account", '/auth/linkedin', class: 'login'
     %p.text-center
       %em Your data will be <u>securely</u> indexed, only searchable by You. No spam, ever.
