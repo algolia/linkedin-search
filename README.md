@@ -22,6 +22,7 @@ Record definition
 ```ruby
 FIELDS = ["id", "first-name", "last-name", "headline", "industry", "picture-url",
  "public-profile-url", "location", "num-connections", "positions"]
+LIMIT = 100
 
 def crawl_connections!(token, secret)
   client = LinkedIn::Client.new(ENV['OMNIAUTH_PROVIDER_KEY'], ENV['OMNIAUTH_PROVIDER_SECRET'])
