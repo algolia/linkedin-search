@@ -1,140 +1,71 @@
-Linkedin Search
-=========
+LinkedIn Search
+===============
 
-This application was generated with the [rails_apps_composer](https://github.com/RailsApps/rails_apps_composer) gem
-provided by the [RailsApps Project](http://railsapps.github.io/).
+This is the Rails 4 application providing [LinkedIn Search](http://linkedin.algolia.com). It's based on [algoliasearch-client-ruby](https://github.com/algolia/algoliasearch-client-ruby) and [omniauth-linkedin](https://github.com/skorks/omniauth-linkedin).
 
-Diagnostics
--
+Index settings
+----------------------
 
-This application was built with recipes that are known to work together.
+```ruby
+Algolia.init application_id: ENV['ALGOLIA_APPLICATION_ID'], api_key: ENV['ALGOLIA_API_KEY']
+INDEX = Algolia::Index.new("linkedin_#{Rails.env}")
+INDEX.set_settings({
+  attributesToIndex: ['last_name', 'first_name', 'unordered(headline)', 'unordered(industry)', 'unordered(location)', 'unordered(positions.company.name)'],
+  customRanking: ['desc(num_connections)', 'asc(last_name)'],
+  attributesForFaceting: ['industry', 'location', 'positions.company.name']
+})
+```
 
-This application was built with preferences that are NOT known to work
-together.
+Record definition
+------------------
 
-If the application doesn’t work as expected, please [report an issue](https://github.com/RailsApps/rails_apps_composer/issues)
-and include these diagnostics:
+```ruby
+FIELDS = ["id", "first-name", "last-name", "headline", "industry", "picture-url",
+ "public-profile-url", "location", "num-connections", "positions"]
 
-We’d also like to know if you’ve found combinations of recipes or
-preferences that do work together.
+def crawl_connections!(token, secret)
+  client = LinkedIn::Client.new(ENV['OMNIAUTH_PROVIDER_KEY'], ENV['OMNIAUTH_PROVIDER_SECRET'])
+  client.authorize_from_access(token, secret)
+  INDEX.add_object build_algolia_object(client.profile(fields: FIELDS))
+  INDEX.add_objects client.connections(fields: FIELDS).all.map { |c| build_algolia_object(c) }
+end
 
-Recipes:
+private
+def build_algolia_object(c)
+  {
+    objectID: "#{uid}_#{c.id}",
+    first_name: c.first_name,
+    last_name: c.last_name,
+    headline: c.headline,
+    industry: c.industry,
+    location: c.location.try(:name),
+    picture_url: c.picture_url,
+    url: c.public_profile_url,
+    num_connections: c.num_connections,
+    positions: (c.positions.try(:all) || []).map { |p|
+      {
+        company: p.company.to_h,
+        is_current: p.is_current,
+        start_date: p.start_date.to_h,
+        summary: p.summary,
+        title: p.title
+      }
+    },
+    _tags: [ uid ] # used for security
+  }
+end
+```
 
-* apps4
-* controllers
-* core
-* email
-* extras
-* frontend
-* gems
-* git
-* init
-* models
-* prelaunch
-* railsapps
-* readme
-* routes
-* saas
-* setup
-* testing
-* views
+Secure indexing
+----------------
 
-Preferences:
+Each record (connection) is tagged with its owner id (Your LinkedIn UID) and we use a per-user [generated secured API key](http://www.algolia.com/doc#SecurityUser) to call Algolia's REST API.
 
-* git: true
-* apps4: none
-* dev_webserver: thin
-* prod_webserver: thin
-* database: sqlite
-* templates: haml
-* unit_test: minitest
-* integration: none
-* continuous_testing: none
-* fixtures: factory_girl
-* frontend: bootstrap3
-* email: none
-* authentication: omniauth
-* omniauth_provider: linkedin
-* authorization: none
-* form_builder: simple_form
-* starter_app: none
-* rvmrc: false
-* quiet_assets: true
-* local_env_file: figaro
-* better_errors: true
+```ruby
+@secured_api_key = Algolia.generate_secured_api_key(ENV['ALGOLIA_API_KEY_SEARCH_ONLY'], current_user.uid)
+```
 
-Ruby on Rails
----
-
-This application requires:
-
--   Ruby
--   Rails
-
-Learn more about [Installing Rails](http://railsapps.github.io/installing-rails.html).
-
-Database
----
-
-This application uses SQLite with ActiveRecord.
-
-Development
--
-
--   Template Engine: Haml
--   Testing Framework: Test::Unit
--   Front-end Framework: Bootstrap 3.0 (Sass)
--   Form Builder: SimpleForm
--   Authentication: OmniAuth
--   Authorization: None
--   Admin: None
-
-
-
-
-
-
- delivery is disabled in development.
-
-Getting Started
-
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
-Documentation and Support
-
-
-This is the only documentation.
-
-#### Issues
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
-Similar Projects
--
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
-Contributing
---
-
-If you make improvements to this application, please share with others.
-
--   Fork the project on GitHub.
--   Make your feature addition or bug fix.
--   Commit with Git.
--   Send the author a pull request.
-
-If you add functionality to this application, create an alternative
-implementation, or build an application that is similar, please contact
-me and I’ll add a note to the README so that others can find your work.
-
-Credits
---
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
-License
---
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+```js
+var algolia = new AlgoliaSearch('#{ENV['ALGOLIA_APPLICATION_ID']}', '#{@secured_api_key}');
+algolia.setSecurityTags('#{current_user.uid}');
+```
