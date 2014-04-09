@@ -27,11 +27,22 @@ def crawl_connections!(token, secret)
   client = LinkedIn::Client.new(ENV['OMNIAUTH_PROVIDER_KEY'], ENV['OMNIAUTH_PROVIDER_SECRET'])
   client.authorize_from_access(token, secret)
   INDEX.add_object build_algolia_object(client.profile(fields: FIELDS))
-  INDEX.add_objects client.connections(fields: FIELDS).all.map { |c| build_algolia_object(c) }
+  start = 0
+  connections = []
+  loop do
+    slice = client.connections(fields: FIELDS, start: start, count: LIMIT).all
+    break if slice.nil? || slice.empty?
+    connections += slice.map { |c| build_algolia_object(c) }
+    start += LIMIT
+  end
+  searchable_connections = connections.compact
+  update_attribute :non_searchable_counter, (connections.length - searchable_connections.length)
+  INDEX.add_objects(searchable_connections)
 end
 
 private
 def build_algolia_object(c)
+  return nil if c.id.blank? || c.id == 'private' # some connections are hidden (strict privacy settings)
   {
     objectID: "#{uid}_#{c.id}",
     first_name: c.first_name,
