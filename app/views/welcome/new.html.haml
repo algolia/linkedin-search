@@ -82,7 +82,7 @@
       var nonSearchableUsers = #{current_user.try(:non_searchable_counter) || 0};
 
       window.helper = new AlgoliaSearchHelper(algolia, 'linkedin_#{Rails.env}', {
-        hitsPerPage: 10,
+        hitsPerPage: 20,
         facets: [],
         disjunctiveFacets: ['positions.company.name', 'industry', 'location']
       });
@@ -185,7 +185,6 @@
         helper.search($q.val(), searchCallback, {
           page: 0,
           maxValuesPerFacet: 10,
-          hitsPerPage: 10,
           advancedSyntax: true,
           queryType: 'prefixAll',
           minWordSizefor1Typo: 4,
