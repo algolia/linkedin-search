@@ -210,6 +210,16 @@
     = link_to "Try with your LinkedIn account", '/auth/linkedin', class: 'login'
     %p.text-center
       %em Your data will be <u>securely</u> indexed, only searchable by You. No spam, ever.
+    .container
+      .row
+        .col-md-6.col-md-offset-3.hidden-sm
+          .well
+            %ul.list-unstyled
+              %li <i class="glyphicon glyphicon-ok"></i> <b>Multi</b>-attributes typo-<b>tolerated</b> search
+              %li <i class="glyphicon glyphicon-ok"></i> Relevant results from the <b>first</b> keystroke
+              %li <i class="glyphicon glyphicon-ok"></i> Faceting <b>as you type</b>
+              %li <i class="glyphicon glyphicon-ok"></i> Ranking combining text relevance & # connections
+              %li <i class="glyphicon glyphicon-ok"></i> <b>1 single line</b> of index configuration
 
 :javascript
   !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");

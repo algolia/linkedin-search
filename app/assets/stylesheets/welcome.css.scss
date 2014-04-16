@@ -46,9 +46,20 @@ body {
   }
 
   p, h1 {
-    color: #888;
+    color: white;
     margin-top: 10px;
     margin-bottom: 30px;
+  }
+
+  ul li {
+    font-size: 1.4em;
+    margin-bottom: 10px;
+    font-style: italic;
+    color: #333;
+
+    i {
+      margin-right: 10px;
+    }
   }
 }
 
