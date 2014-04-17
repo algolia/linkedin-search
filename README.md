@@ -1,7 +1,7 @@
 LinkedIn Search
 ===============
 
-This is the Rails 4 application providing [LinkedIn Search](http://linkedin.algolia.com). It's based on [algoliasearch-client-ruby](https://github.com/algolia/algoliasearch-client-ruby) and [omniauth-linkedin](https://github.com/skorks/omniauth-linkedin).
+This is the Rails 4 application providing [LinkedIn Search](http://linkedinsearch.algolia.com/). It's based on [algoliasearch-client-ruby](https://github.com/algolia/algoliasearch-client-ruby) and [omniauth-linkedin](https://github.com/skorks/omniauth-linkedin).
 
 Index settings
 ----------------------
