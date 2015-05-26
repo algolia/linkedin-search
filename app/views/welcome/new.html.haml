@@ -207,7 +207,14 @@
       %br
       %em
         %small Rethink the way you search your contacts on LinkedIn.
-    = link_to "Try with your LinkedIn account", '/auth/linkedin', class: 'login'
+    .text-center
+      = link_to "Try with your LinkedIn account", '/auth/linkedin', class: 'btn btn-danger', disabled: true
+      %br
+      %br
+      %br
+      %span.alert.alert-danger This demo has been disabled since the <a href="https://developer.linkedin.com/blog/posts/2015/developer-program-changes">last changes</a> of LinkedIn Developer Program.
+      %br
+      %br
     %p.text-center
       %em Your data will be <u>securely</u> indexed, only searchable by You. No spam, ever.
     .container
