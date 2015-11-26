@@ -2,6 +2,8 @@
 
 This demo has been disabled since the [last changes](https://developer.linkedin.com/blog/posts/2015/developer-program-changes) of LinkedIn Developer Program.
 
+==============
+
 LinkedIn Search
 ===============
 
